@@ -222,6 +222,6 @@ include_directories(
 # add_executable(publisher src/pub.cpp)
 # target_link_libraries(publisher ${catkin_LIBRARIES})
 
-add_executable(project_sub src/sub.cpp)
-add_dependencies(project_sub robotics_first_generate_messages_cpp)
-target_link_libraries(project_sub ${catkin_LIBRARIES})
+add_executable(project_sync src/sync.cpp)
+add_dependencies(project_sync robotics_first_generate_messages_cpp)
+target_link_libraries(project_sync ${catkin_LIBRARIES})

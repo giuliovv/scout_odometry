@@ -1,5 +1,4 @@
 #include "ros/ros.h"
-// #include "geometry_msgs/Vector3Stamped.h"
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 
