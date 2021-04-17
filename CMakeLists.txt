@@ -222,6 +222,6 @@ include_directories(
 # add_executable(publisher src/pub.cpp)
 # target_link_libraries(publisher ${catkin_LIBRARIES})
 
-add_executable(odometry src/odometry.cpp)
-add_dependencies(odometry robotics_first_generate_messages_cpp)
-target_link_libraries(odometry ${catkin_LIBRARIES})
+add_executable(twist src/twist.cpp)
+add_dependencies(twist robotics_first_generate_messages_cpp)
+target_link_libraries(twist ${catkin_LIBRARIES})

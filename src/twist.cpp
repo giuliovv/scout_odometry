@@ -6,11 +6,11 @@
 
 void callback(const robotics_first::MotorSpeedConstPtr& msg1, 
               const robotics_first::MotorSpeedConstPtr& msg2,
-              const ros::Publisher odometry) {
+              const ros::Publisher twist) {
 
     ROS_INFO ("Received two messages: (%f,%f)", 
         msg1->rpm, msg2->rpm);
-    odometry.publish(msg1);
+    twist.publish(msg1);
 }
 
 int main(int argc, char** argv) {
@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
 
     ros::NodeHandle n;
 
-    ros::Publisher odometry = n.advertise<robotics_first::MotorSpeed>("odometry", 1000);
+    ros::Publisher twist = n.advertise<robotics_first::MotorSpeed>("twist", 1000);
 
     message_filters::Subscriber<robotics_first::MotorSpeed> sub1(n, "motor_speed_fl", 1);
     message_filters::Subscriber<robotics_first::MotorSpeed> sub2(n, "motor_speed_fr", 1);
@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     // message_filters::Subscriber<robotics_first::MotorSpeed> sub4(n, "motor_speed_rr", 1);
     message_filters::TimeSynchronizer<robotics_first::MotorSpeed, 
                                         robotics_first::MotorSpeed> sync(sub1, sub2, 10);
-    sync.registerCallback(boost::bind(&callback, _1, _2, odometry));
+    sync.registerCallback(boost::bind(&callback, _1, _2, twist));
 
     ros::spin();
 
