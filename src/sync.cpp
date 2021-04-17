@@ -1,7 +1,6 @@
 #include "ros/ros.h"
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
-#include "std_msgs/Float64.h"
 
 #include "robotics_first/MotorSpeed.h"
 
