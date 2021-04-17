@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   nav_msgs
   std_msgs
+  message_filters
 )
 
 ## System dependencies are found with CMake's conventions
@@ -118,6 +119,7 @@ catkin_package(
   std_msgs
   message_runtime
   nav_msgs
+  message_filters
 #  DEPENDS system_lib
 )
 
@@ -128,7 +130,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -220,7 +222,6 @@ include_directories(
 # add_executable(publisher src/pub.cpp)
 # target_link_libraries(publisher ${catkin_LIBRARIES})
 
-# add_executable(subscriber src/sub.cpp)
-# target_link_libraries(subscriber ${catkin_LIBRARIES})
-
-# add_dependencies(publisher pub_sub_generate_messages_cpp)
+add_executable(project_sub src/sub.cpp)
+add_dependencies(project_sub robotics_first_generate_messages_cpp)
+target_link_libraries(project_sub ${catkin_LIBRARIES})
