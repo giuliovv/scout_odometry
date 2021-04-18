@@ -227,3 +227,7 @@ include_directories(
 add_executable(twist src/twist.cpp)
 add_dependencies(twist robotics_first_generate_messages_cpp)
 target_link_libraries(twist ${catkin_LIBRARIES})
+
+add_executable(baseline_calculator src/baseline_calculator.cpp)
+add_dependencies(baseline_calculator robotics_first_generate_messages_cpp)
+target_link_libraries(baseline_calculator ${catkin_LIBRARIES})
