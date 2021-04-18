@@ -16,6 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_filters
   geometry_msgs
+  tf2
+  tf2_ros 
 )
 
 ## System dependencies are found with CMake's conventions
@@ -231,3 +233,10 @@ target_link_libraries(twist ${catkin_LIBRARIES})
 add_executable(baseline_calculator src/baseline_calculator.cpp)
 add_dependencies(baseline_calculator robotics_first_generate_messages_cpp)
 target_link_libraries(baseline_calculator ${catkin_LIBRARIES})
+
+add_executable(odometry src/odometry.cpp)
+add_dependencies(odometry robotics_first_generate_messages_cpp)
+target_link_libraries(odometry ${catkin_LIBRARIES})
+
+# add_executable(agile_tf src/agile_tf.cpp)
+# target_link_libraries(agile_tf ${catkin_LIBRARIES})

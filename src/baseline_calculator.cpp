@@ -15,33 +15,36 @@ void callback(const robotics_first::MotorSpeedConstPtr& left,
               const nav_msgs::OdometryConstPtr& odo,
               const ros::Publisher appa_baseline) {
 
+    // ROS_INFO("Left RPM: %f", left -> rpm);
+
     float v_left = (left->rpm) * 2 * M_PI * R / 60;
     float v_right = (right->rpm) * 2 * M_PI * R / 60;
 
     float v_x = (v_left + v_right)/2;
 
-    float w = odo->twist.twist.angular.x;
+    float w = odo->twist.twist.angular.z;
     std_msgs::Float64 appa;
     appa.data = (-v_left+v_right)/w;
 
     float v_x_read = odo->twist.twist.linear.x;
 
-    // ROS_INFO("APPARENT: (%f, %f)", w, appa);
+    // ROS_INFO("APPARENT: (%f, %f)", w, appa.data);
 
     ROS_INFO("Vx: (%f, %f)", v_x, v_x_read);
+    // ROS_INFO("Rapporto: %f", v_x/v_x_read);
 
     appa_baseline.publish(appa);
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "syncronizer");
+    ros::init(argc, argv, "baseline_calculator");
 
     ros::NodeHandle n;
 
     ros::Publisher appa_baseline = n.advertise<std_msgs::Float64>("apparent_baseline", 1000);
 
-    message_filters::Subscriber<robotics_first::MotorSpeed> sub1(n, "motor_speed_fl", 1);
-    message_filters::Subscriber<robotics_first::MotorSpeed> sub2(n, "motor_speed_fr", 1);
+    message_filters::Subscriber<robotics_first::MotorSpeed> sub1(n, "motor_speed_rl", 1);
+    message_filters::Subscriber<robotics_first::MotorSpeed> sub2(n, "motor_speed_rr", 1);
     message_filters::Subscriber<nav_msgs::Odometry> sub3(n, "scout_odom", 1);
     // message_filters::Subscriber<robotics_first::MotorSpeed> sub4(n, "motor_speed_rr", 1);
     message_filters::TimeSynchronizer<robotics_first::MotorSpeed, 
