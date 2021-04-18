@@ -18,11 +18,17 @@ void callback(const robotics_first::MotorSpeedConstPtr& left,
     float v_left = (left->rpm) * 2 * M_PI * R / 60;
     float v_right = (right->rpm) * 2 * M_PI * R / 60;
 
-    float w = odo->twist.twist.linear.x;
+    float v_x = (v_left + v_right)/2;
+
+    float w = odo->twist.twist.angular.x;
     std_msgs::Float64 appa;
     appa.data = (-v_left+v_right)/w;
 
-    ROS_INFO("APPARENT: (%f, %f)", w, appa);
+    float v_x_read = odo->twist.twist.linear.x;
+
+    // ROS_INFO("APPARENT: (%f, %f)", w, appa);
+
+    ROS_INFO("Vx: (%f, %f)", v_x, v_x_read);
 
     appa_baseline.publish(appa);
 }
