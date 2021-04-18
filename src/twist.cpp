@@ -1,16 +1,37 @@
 #include "ros/ros.h"
+#include <math.h>
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
+#include <geometry_msgs/TwistStamped.h>
 
 #include "robotics_first/MotorSpeed.h"
 
-void callback(const robotics_first::MotorSpeedConstPtr& msg1, 
-              const robotics_first::MotorSpeedConstPtr& msg2,
+#define R 0.1575
+
+void callback(const robotics_first::MotorSpeedConstPtr& left, 
+              const robotics_first::MotorSpeedConstPtr& right,
               const ros::Publisher twist) {
 
+    float v_left = (left->rpm) * 2 * M_PI * R / 60;
+    float v_right = (right->rpm) * 2 * M_PI * R / 60;
+    float w = (v_right - v_left)/1.1;
+    float v_x = (v_left + v_right)/2;
+
+    geometry_msgs::TwistStamped msg;
+    msg.header.stamp = ros::Time::now();
+    msg.header.frame_id = "fcu";
+    msg.twist.linear.x = v_x;
+    msg.twist.linear.y = 0.0;
+    msg.twist.linear.z = 0.0;
+    msg.twist.angular.x = 0.0;
+    msg.twist.angular.y = 0.0;
+    msg.twist.angular.z = w;
+
     ROS_INFO ("Received two messages: (%f,%f)", 
-        msg1->rpm, msg2->rpm);
-    twist.publish(msg1);
+        v_left, v_right);
+
+
+    twist.publish(msg);
 }
 
 int main(int argc, char** argv) {
@@ -18,7 +39,7 @@ int main(int argc, char** argv) {
 
     ros::NodeHandle n;
 
-    ros::Publisher twist = n.advertise<robotics_first::MotorSpeed>("twist", 1000);
+    ros::Publisher twist = n.advertise<geometry_msgs::TwistStamped>("twist", 1000);
 
     message_filters::Subscriber<robotics_first::MotorSpeed> sub1(n, "motor_speed_fl", 1);
     message_filters::Subscriber<robotics_first::MotorSpeed> sub2(n, "motor_speed_fr", 1);
