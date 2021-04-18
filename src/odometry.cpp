@@ -1,10 +1,8 @@
 #include "ros/ros.h"
 #include <geometry_msgs/TwistStamped.h>
 
-#include "robotics_first/MotorSpeed.h"
-
 void callback(const geometry_msgs::TwistStampedConstPtr& msg){
-    ROS_INFO("I heard: [%f]", msg->twist.linear.z);
+    ROS_INFO("I heard: [%f]", msg->twist.angular.z);
 }
 
 int main(int argc, char** argv) {
