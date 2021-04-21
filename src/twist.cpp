@@ -34,6 +34,7 @@ void callback(const robotics_first::MotorSpeedConstPtr& left,
 }
 
 int main(int argc, char** argv) {
+
     ros::init(argc, argv, "syncronizer");
 
     ros::NodeHandle n;
@@ -51,4 +52,5 @@ int main(int argc, char** argv) {
     ros::spin();
 
     return 0;
+    
 }
