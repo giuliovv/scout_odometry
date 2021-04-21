@@ -1,0 +1,9 @@
+<launch>
+
+ <param name="x0" value="0.0" type="double"/>
+ <param name="y0" value="0.0" type="double"/>
+ <param name="theta0" value="0.0" type="double"/>
+ 
+ <node pkg="robotics_first" name="robotics_first" type="odometry" output="screen"/>
+
+</launch>

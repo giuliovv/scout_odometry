@@ -42,7 +42,7 @@ void callback(const robotics_first::MotorSpeedConstPtr& left,
     // ROS_INFO("APPARENT: (%f, %f)", w, appa.data);
 
     // ROS_INFO("Vx: (%f, %f)", v_x, v_x_read);
-    // ROS_INFO("Rapporto: %f", v_x/v_x_read);
+    // ROS_INFO("Gear ratio: %f", v_x/v_x_read);
 
     // ROS_INFO("Vl: %f Vr: %f, w: %f, base: %f", v_left, v_right, w, appa.data);
 
