@@ -8,7 +8,10 @@
     <node pkg="robotics_first" name="robot_twist" type="twist" output="screen"/>
     <node pkg="robotics_first" name="agile_tf" type="agile_tf" output="screen"/>
     <node pkg="robotics_first" name="robot_tf" type="local_tf" output="screen"/>
+
+    <arg name="bag_file_name" value="bag1"/>
     
     <node pkg="rqt_reconfigure" name="reconfigure_gui" type="rqt_reconfigure" />
+    <node pkg="rosbag" type="play" name="player" output="screen" args="--clock $(find robotics_first)/bags/$(arg bag_file_name).bag"/>
 
 </launch>
