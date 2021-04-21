@@ -14,8 +14,8 @@ public:
 
   void callback(const nav_msgs::OdometryConstPtr& msg){
     transformStamped.header.stamp = ros::Time::now();
-    transformStamped.header.frame_id = "world";
-    transformStamped.child_frame_id = "agilex";
+    transformStamped.header.frame_id = "odom";
+    transformStamped.child_frame_id = "base_link";
     transformStamped.transform.translation.x = msg->pose.pose.orientation.x;
     transformStamped.transform.translation.y = msg->pose.pose.orientation.y;
     transformStamped.transform.translation.z = 0.0;
@@ -37,7 +37,7 @@ private:
 
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "subscribe_and_publish");
+  ros::init(argc, argv, "agile_tf");
   tf_sub_pub my_tf_sub_bub;
   ros::spin();
   return 0;

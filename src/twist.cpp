@@ -7,13 +7,14 @@
 #include "robotics_first/MotorSpeed.h"
 
 #define R 0.1575
+#define GEAR_RATIO 37
 
 void callback(const robotics_first::MotorSpeedConstPtr& left, 
               const robotics_first::MotorSpeedConstPtr& right,
               const ros::Publisher twist) {
 
-    float v_left = (left->rpm) * 2 * M_PI * R / 60;
-    float v_right = (right->rpm) * 2 * M_PI * R / 60;
+    float v_left = (left->rpm) * 2 * M_PI * R / (60 * GEAR_RATIO);
+    float v_right = (right->rpm) * 2 * M_PI * R / (60 * GEAR_RATIO);
     float w = (v_right - v_left)/1.1;
     float v_x = (v_left + v_right)/2;
 

@@ -10,6 +10,7 @@
 #include "robotics_first/MotorSpeed.h"
 
 #define R 0.1575
+#define GEAR_RATIO 37
 
 // float old = 0;
 // int oldtempo = 1;
@@ -21,8 +22,8 @@ void callback(const robotics_first::MotorSpeedConstPtr& left,
 
     // ROS_INFO("Left RPM: %f", left -> rpm);
 
-    float v_left = (left->rpm) * 2 * M_PI * R / 60;
-    float v_right = (right->rpm) * 2 * M_PI * R / 60;
+    float v_left = (left->rpm) * 2 * M_PI * R / (60 * GEAR_RATIO);
+    float v_right = (right->rpm) * 2 * M_PI * R / (60 * GEAR_RATIO);
 
     float v_x = (v_left + v_right)/2;
 
@@ -36,8 +37,8 @@ void callback(const robotics_first::MotorSpeedConstPtr& left,
 
     // ROS_INFO("APPARENT: (%f, %f)", w, appa.data);
 
-    // ROS_INFO("Vx: (%f, %f)", v_x, v_x_ground);
-    ROS_INFO("Rapporto: %f", v_x/v_x_read);
+    ROS_INFO("Vx: (%f, %f)", v_x, v_x_read);
+    // ROS_INFO("Rapporto: %f", v_x/v_x_read);
 
     // ROS_INFO("tempo %f", scout->pose.position.x);
 

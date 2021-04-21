@@ -238,5 +238,5 @@ add_executable(odometry src/odometry.cpp)
 add_dependencies(odometry robotics_first_generate_messages_cpp)
 target_link_libraries(odometry ${catkin_LIBRARIES})
 
-# add_executable(agile_tf src/agile_tf.cpp)
-# target_link_libraries(agile_tf ${catkin_LIBRARIES})
+add_executable(agile_tf src/agile_tf.cpp)
+target_link_libraries(agile_tf ${catkin_LIBRARIES})
