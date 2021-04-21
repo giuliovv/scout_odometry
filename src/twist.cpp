@@ -17,7 +17,7 @@ void callback(const robotics_first::MotorSpeedConstPtr& left,
     float v_left = (left->rpm) * 2 * M_PI * R / (60 * GEAR_RATIO);
     float v_right = (right->rpm) * 2 * M_PI * R / (60 * GEAR_RATIO);
     float w = (v_right - v_left)/APPA;
-    float v_x = (v_left + v_right)/2;
+    float v_x = (- v_left + v_right)/2;
 
     geometry_msgs::TwistStamped msg;
     msg.header.stamp = ros::Time::now();
