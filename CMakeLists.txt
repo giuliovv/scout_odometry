@@ -238,6 +238,7 @@ target_link_libraries(baseline_calculator ${catkin_LIBRARIES})
 
 add_executable(odometry src/odometry.cpp)
 add_dependencies(odometry robotics_first_generate_messages_cpp)
+add_dependencies(odometry ${PROJECT_NAME}_gencfg)
 target_link_libraries(odometry ${catkin_LIBRARIES})
 
 add_executable(agile_tf src/agile_tf.cpp)
@@ -245,7 +246,3 @@ target_link_libraries(agile_tf ${catkin_LIBRARIES})
 
 add_executable(local_tf src/local_tf.cpp)
 target_link_libraries(local_tf ${catkin_LIBRARIES})
-
-add_executable(dyn_parameter src/dyn_parameter.cpp)
-add_dependencies(dyn_parameter ${PROJECT_NAME}_gencfg)
-target_link_libraries(dyn_parameter ${catkin_LIBRARIES})

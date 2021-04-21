@@ -8,6 +8,5 @@
     <node pkg="robotics_first" name="robot_twist" type="twist" output="screen"/>
     <node pkg="robotics_first" name="agile_tf" type="agile_tf" output="screen"/>
     <node pkg="robotics_first" name="robot_tf" type="local_tf" output="screen"/>
-    <node pkg="robotics_first" name="dyn_paramaters" type="dyn_parameter" output="screen"/>
 
 </launch>

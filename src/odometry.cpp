@@ -3,6 +3,8 @@
 #include <std_msgs/Float64.h>
 #include <nav_msgs/Odometry.h>
 #include <math.h>
+#include <dynamic_reconfigure/server.h>
+#include <robotics_first/IntegrationConfig.h>
 
 #define T_s 0.1
 
@@ -22,6 +24,9 @@ class Odometry{
                 ROS_INFO("Error retrieving paramater theta.");
             };
 
+            f = boost::bind(&Odometry::setEulerKutta, this, _1, _2);
+            server.setCallback(f);
+
             sub = n.subscribe("/twist", 1000, &Odometry::callback, this);
 
             odometry = n.advertise<nav_msgs::Odometry>("odometry", 1000);
@@ -37,17 +42,12 @@ class Odometry{
 
     }
 
-<<<<<<< HEAD
-    void kutta(const geometry_msgs::TwistStampedConstPtr& msg){
-        
-=======
     void kutta(const geometry_msgs::TwistStampedConstPtr& msg, double V_x, double omega, double time){
 
         theta_k1 = theta_k + omega*time;
         x_k1 = x_k + V_x*time*cos(theta_k + omega*time/2);
         y_k1 = y_k + V_x*time*sin(theta_k + omega*time/2);
 
->>>>>>> 60e2b3efe89e23b33e1a81ea01783e102358cd2e
     }
 
     void callback(const geometry_msgs::TwistStampedConstPtr& msg){
@@ -57,10 +57,13 @@ class Odometry{
         double time = msg -> header.stamp.toSec();
         double delta_time = time - prv_time;
 
-        euler(msg, V_x, omega, delta_time);
-
-        // ROS_INFO("TEMPO: %f", delta_time);
-        // ROS_INFO("X(k+1): %f", x_k1);
+        if (euler_kutta == 0){
+            ROS_INFO("EULER");
+            euler(msg, V_x, omega, delta_time);
+        } else {
+            ROS_INFO("KUTTA");
+            kutta(msg, V_x, omega, delta_time);
+        };
 
         odo_msg.child_frame_id = "world";
         odo_msg.header.frame_id = "robot_frame";
@@ -79,12 +82,22 @@ class Odometry{
 
     }
 
+    void setEulerKutta(robotics_first::IntegrationConfig &config, uint32_t level) {
+
+        ROS_INFO("Reconfigure Request: %d", config.method);
+
+        euler_kutta = config.method;
+
+    }
+
     private:
     ros::NodeHandle n;
     ros::Subscriber sub;
     ros::Publisher odometry;
     nav_msgs::Odometry odo_msg; 
-    int euler_kutta;
+    dynamic_reconfigure::Server<robotics_first::IntegrationConfig> server;
+    dynamic_reconfigure::Server<robotics_first::IntegrationConfig>::CallbackType f;
+    int euler_kutta = 0;
     double x_k;
     double y_k;
     double theta_k;
