@@ -35,7 +35,11 @@ class Odometry{
 
     }
 
-    void kutta(const geometry_msgs::TwistStampedConstPtr& msg){
+    void kutta(const geometry_msgs::TwistStampedConstPtr& msg, double V_x, double omega, double time){
+
+        theta_k1 = theta_k + omega*time;
+        x_k1 = x_k + V_x*time*cos(theta_k + omega*time/2);
+        y_k1 = y_k + V_x*time*sin(theta_k + omega*time/2);
 
     }
 
@@ -43,13 +47,13 @@ class Odometry{
 
         double V_x = msg -> twist.linear.x;
         double omega = msg -> twist.angular.z;
-        double time = msg->header.stamp.toSec();
+        double time = msg -> header.stamp.toSec();
         double delta_time = time - prv_time;
 
         euler(msg, V_x, omega, delta_time);
 
-        ROS_INFO("TEMPO: %f", delta_time);
-        ROS_INFO("X(k+1): %f", x_k1);
+        // ROS_INFO("TEMPO: %f", delta_time);
+        // ROS_INFO("X(k+1): %f", x_k1);
 
         odo_msg.child_frame_id = "world";
         odo_msg.header.frame_id = "robot_frame";
@@ -63,8 +67,8 @@ class Odometry{
 
         theta_k = theta_k1;
         x_k = x_k1;
-        y_k = y_k;
-        prv_time = ros::Time::now().toSec();
+        y_k = y_k1;
+        prv_time = time;
 
     }
 
@@ -73,13 +77,14 @@ class Odometry{
     ros::Subscriber sub;
     ros::Publisher odometry;
     nav_msgs::Odometry odo_msg; 
+    int euler_kutta;
     double x_k;
     double y_k;
     double theta_k;
     double x_k1;
     double y_k1;
     double theta_k1;
-    double prv_time = 0;
+    double prv_time = ros::Time::now().toSec();
 };
 
 
