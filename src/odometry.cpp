@@ -4,6 +4,8 @@
 #include <nav_msgs/Odometry.h>
 #include <math.h>
 
+#define T_s 0.1
+
 class Odometry{
     public:
         Odometry() {
@@ -36,7 +38,7 @@ class Odometry{
     }
 
     void kutta(const geometry_msgs::TwistStampedConstPtr& msg){
-
+        
     }
 
     void callback(const geometry_msgs::TwistStampedConstPtr& msg){
@@ -63,8 +65,8 @@ class Odometry{
 
         theta_k = theta_k1;
         x_k = x_k1;
-        y_k = y_k;
-        prv_time = ros::Time::now().toSec();
+        y_k = y_k1;
+        prv_time = time;
 
     }
 
@@ -79,7 +81,7 @@ class Odometry{
     double x_k1;
     double y_k1;
     double theta_k1;
-    double prv_time = 0;
+    double prv_time = ros::Time::now().toSec();
 };
 
 
