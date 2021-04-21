@@ -17,7 +17,8 @@ find_package(catkin REQUIRED COMPONENTS
   message_filters
   geometry_msgs
   tf2
-  tf2_ros 
+  tf2_ros
+  dynamic_reconfigure
 )
 
 ## System dependencies are found with CMake's conventions
@@ -98,10 +99,11 @@ generate_messages(
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
+generate_dynamic_reconfigure_options(
+  cfg/parameter.cfg
 #   cfg/DynReconf1.cfg
 #   cfg/DynReconf2.cfg
-# )
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -243,3 +245,7 @@ target_link_libraries(agile_tf ${catkin_LIBRARIES})
 
 add_executable(local_tf src/local_tf.cpp)
 target_link_libraries(local_tf ${catkin_LIBRARIES})
+
+add_executable(dyn_parameter src/dyn_parameter.cpp)
+add_dependencies(dyn_parameter ${PROJECT_NAME}_gencfg)
+target_link_libraries(dyn_parameter ${catkin_LIBRARIES})

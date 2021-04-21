@@ -37,21 +37,30 @@ class Odometry{
 
     }
 
+<<<<<<< HEAD
     void kutta(const geometry_msgs::TwistStampedConstPtr& msg){
         
+=======
+    void kutta(const geometry_msgs::TwistStampedConstPtr& msg, double V_x, double omega, double time){
+
+        theta_k1 = theta_k + omega*time;
+        x_k1 = x_k + V_x*time*cos(theta_k + omega*time/2);
+        y_k1 = y_k + V_x*time*sin(theta_k + omega*time/2);
+
+>>>>>>> 60e2b3efe89e23b33e1a81ea01783e102358cd2e
     }
 
     void callback(const geometry_msgs::TwistStampedConstPtr& msg){
 
         double V_x = msg -> twist.linear.x;
         double omega = msg -> twist.angular.z;
-        double time = msg->header.stamp.toSec();
+        double time = msg -> header.stamp.toSec();
         double delta_time = time - prv_time;
 
         euler(msg, V_x, omega, delta_time);
 
-        ROS_INFO("TEMPO: %f", delta_time);
-        ROS_INFO("X(k+1): %f", x_k1);
+        // ROS_INFO("TEMPO: %f", delta_time);
+        // ROS_INFO("X(k+1): %f", x_k1);
 
         odo_msg.child_frame_id = "world";
         odo_msg.header.frame_id = "robot_frame";
@@ -75,6 +84,7 @@ class Odometry{
     ros::Subscriber sub;
     ros::Publisher odometry;
     nav_msgs::Odometry odo_msg; 
+    int euler_kutta;
     double x_k;
     double y_k;
     double theta_k;
