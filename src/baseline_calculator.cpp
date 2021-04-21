@@ -10,7 +10,7 @@
 #include "robotics_first/MotorSpeed.h"
 
 #define R 0.1575
-#define GEAR_RATIO 37
+#define GEAR_RATIO 38
 
 // float old = 0;
 // int oldtempo = 1;
@@ -25,20 +25,26 @@ void callback(const robotics_first::MotorSpeedConstPtr& left,
     float v_left = (left->rpm) * 2 * M_PI * R / (60 * GEAR_RATIO);
     float v_right = (right->rpm) * 2 * M_PI * R / (60 * GEAR_RATIO);
 
-    float v_x = (v_left + v_right)/2;
+    float v_x = (- v_left + v_right)/2;
 
     float w = odo->twist.twist.angular.z;
     std_msgs::Float64 appa;
-    appa.data = (-v_left+v_right)/w;
+    appa.data = (v_left+v_right)/w;
 
     float v_x_read = odo->twist.twist.linear.x;
 
     // float v_x_ground = (scout -> pose.position.x - old)/(scout -> header.stamp.sec - oldtempo);
 
+    if (v_left/v_right < 1.2 && v_left/v_right > 0.8 && v_left * v_right > 0){
+        ROS_INFO("Vl: %f Vr: %f, w: %f, base: %f", v_left, v_right, w, appa.data);
+    }
+
     // ROS_INFO("APPARENT: (%f, %f)", w, appa.data);
 
-    ROS_INFO("Vx: (%f, %f)", v_x, v_x_read);
+    // ROS_INFO("Vx: (%f, %f)", v_x, v_x_read);
     // ROS_INFO("Rapporto: %f", v_x/v_x_read);
+
+    // ROS_INFO("Vl: %f Vr: %f, w: %f, base: %f", v_left, v_right, w, appa.data);
 
     // ROS_INFO("tempo %f", scout->pose.position.x);
 
