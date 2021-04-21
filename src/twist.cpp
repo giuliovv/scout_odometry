@@ -29,10 +29,8 @@ void callback(const robotics_first::MotorSpeedConstPtr& left,
     msg.twist.angular.y = 0.0;
     msg.twist.angular.z = w;
 
-    ROS_INFO ("Received two messages: (%f,%f)", 
-        v_left, v_right);
-
     twist.publish(msg);
+
 }
 
 int main(int argc, char** argv) {

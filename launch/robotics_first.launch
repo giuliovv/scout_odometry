@@ -4,7 +4,9 @@
     <param name="y0" value="0.0" type="double"/>
     <param name="theta0" value="0.0" type="double"/>
 
-    <node pkg="robotics_first" name="robotics_first" type="odometry" output="screen"/>
-    <node pkg="robotics_first" name="robotics_first" type="twist" output="screen"/>
+    <node pkg="robotics_first" name="robot_odometry" type="odometry" output="screen"/>
+    <node pkg="robotics_first" name="robot_twist" type="twist" output="screen"/>
+    <node pkg="robotics_first" name="agile_tf" type="agile_tf" output="screen"/>
+    <node pkg="robotics_first" name="robot_tf" type="local_tf" output="screen"/>
 
 </launch>

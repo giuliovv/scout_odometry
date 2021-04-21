@@ -20,8 +20,6 @@ class Odometry{
                 ROS_INFO("Error retrieving paramater theta.");
             };
 
-            ROS_INFO("%f %f %f", x_k, y_k, theta_k);
-
             sub = n.subscribe("/twist", 1000, &Odometry::callback, this);
 
             odometry = n.advertise<nav_msgs::Odometry>("odometry", 1000);
@@ -46,11 +44,15 @@ class Odometry{
         double V_x = msg -> twist.linear.x;
         double omega = msg -> twist.angular.z;
         double time = msg->header.stamp.toSec();
+        double delta_time = time - prv_time;
 
-        euler(msg, V_x, omega, time);
+        euler(msg, V_x, omega, delta_time);
 
-        odo_msg.child_frame_id = "child_frame";
-        odo_msg.header.frame_id = "header_frame";
+        ROS_INFO("TEMPO: %f", delta_time);
+        ROS_INFO("X(k+1): %f", x_k1);
+
+        odo_msg.child_frame_id = "world";
+        odo_msg.header.frame_id = "robot_frame";
         odo_msg.header.stamp = ros::Time::now();
         odo_msg.pose.pose.orientation.z = theta_k1;
         odo_msg.pose.pose.position.x = x_k1;
@@ -62,7 +64,7 @@ class Odometry{
         theta_k = theta_k1;
         x_k = x_k1;
         y_k = y_k;
-        prv_time = time;
+        prv_time = ros::Time::now().toSec();
 
     }
 
