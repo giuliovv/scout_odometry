@@ -6,14 +6,9 @@
 #include <math.h>
 #include <dynamic_reconfigure/server.h>
 #include <robotics_first/IntegrationConfig.h>
-<<<<<<< HEAD
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-
-#define T_s 0.1
-=======
 #include "std_srvs/Empty.h"
 #include <robotics_first/ResetToPose.h>
->>>>>>> 094292f6748e3fe7afa2dd01d881885cd83c3146
 
 class Odometry{
     public:
@@ -34,12 +29,12 @@ class Odometry{
             f = boost::bind(&Odometry::setEulerKutta, this, _1, _2);
             server.setCallback(f);
 
+            n.advertiseService("reset_odometry", &Odometry::resetOdometry, this);
+            n.advertiseService("reset_to_pose", &Odometry::resetToPose, this);
+
             sub = n.subscribe("/twist", 1000, &Odometry::callback, this);
 
             odometry = n.advertise<nav_msgs::Odometry>("odometry", 1000);
-
-            n.advertiseService("reset_odometry", &Odometry::resetOdometry, this);
-            n.advertiseService("reset_to_pose", &Odometry::resetToPose, this);
 
         }
 
@@ -68,10 +63,8 @@ class Odometry{
         double delta_time = time - prv_time;
 
         if (euler_kutta == 0){
-            ROS_INFO("EULER");
             euler(msg, V_x, omega, delta_time);
         } else {
-            ROS_INFO("KUTTA");
             kutta(msg, V_x, omega, delta_time);
         };
 
@@ -107,7 +100,7 @@ class Odometry{
 
     }
 
-    bool resetToPose(robotics_first::ResetToPose::Request &req, std_srvs::Empty::Response &res){
+    bool resetToPose(robotics_first::ResetToPose::Request &req, robotics_first::ResetToPose::Response &res){
 
         x_k = req.x;
         y_k = req.y;
@@ -129,7 +122,6 @@ class Odometry{
     private:
     ros::NodeHandle n;
     ros::Publisher odometry;
-    ros::ServiceServer service;
     ros::Subscriber sub;
     nav_msgs::Odometry odo_msg; 
     tf2::Quaternion q;
