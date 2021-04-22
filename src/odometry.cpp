@@ -7,6 +7,7 @@
 #include <dynamic_reconfigure/server.h>
 #include <robotics_first/IntegrationConfig.h>
 #include "std_srvs/Empty.h"
+#include <robotics_first/ResetToPose.h>
 
 class Odometry{
     public:
@@ -32,6 +33,7 @@ class Odometry{
             odometry = n.advertise<nav_msgs::Odometry>("odometry", 1000);
 
             n.advertiseService("reset_odometry", &Odometry::resetOdometry, this);
+            n.advertiseService("reset_to_pose", &Odometry::resetToPose, this);
 
         }
 
@@ -84,12 +86,24 @@ class Odometry{
 
     }
 
-    bool resetOdometry(std_srvs::Empty::Request &req,std_srvs::Empty::Response &res){
+    bool resetOdometry(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res){
 
         x_k = 0;
         y_k = 0;
         theta_k = 0;
+
         ROS_INFO("Odometry setted at 0.");
+        return true;
+
+    }
+
+    bool resetToPose(robotics_first::ResetToPose::Request &req, std_srvs::Empty::Response &res){
+
+        x_k = req.x;
+        y_k = req.y;
+        theta_k = req.theta;
+        
+        ROS_INFO("Odometry setted at x=%f y=%f theta=%f.", req.x, req.y, req.theta);
         return true;
 
     }
