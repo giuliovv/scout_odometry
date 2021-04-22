@@ -29,12 +29,12 @@ class Odometry{
             f = boost::bind(&Odometry::setEulerKutta, this, _1, _2);
             server.setCallback(f);
 
-            n.advertiseService("reset_odometry", &Odometry::resetOdometry, this);
-            n.advertiseService("reset_to_pose", &Odometry::resetToPose, this);
-
             sub = n.subscribe("/twist", 1000, &Odometry::callback, this);
 
             odometry = n.advertise<nav_msgs::Odometry>("odometry", 1000);
+
+            reset_odometry = n.advertiseService("reset_odometry", &Odometry::resetOdometry, this);
+            reset_odometry_to_pose = n.advertiseService("reset_to_pose", &Odometry::resetToPose, this);
 
         }
 
@@ -123,6 +123,8 @@ class Odometry{
     ros::NodeHandle n;
     ros::Publisher odometry;
     ros::Subscriber sub;
+    ros::ServiceServer reset_odometry;
+    ros::ServiceServer reset_odometry_to_pose;
     nav_msgs::Odometry odo_msg; 
     tf2::Quaternion q;
     dynamic_reconfigure::Server<robotics_first::IntegrationConfig> server;
