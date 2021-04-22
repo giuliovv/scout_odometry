@@ -1,16 +1,16 @@
 #include "ros/ros.h"
 #include <geometry_msgs/TwistStamped.h>
 #include <std_msgs/Float64.h>
+#include <std_msgs/Bool.h>
 #include <nav_msgs/Odometry.h>
 #include <math.h>
 #include <dynamic_reconfigure/server.h>
 #include <robotics_first/IntegrationConfig.h>
-
-#define T_s 0.1
+#include "std_srvs/Empty.h"
 
 class Odometry{
     public:
-        Odometry() {
+        Odometry(){
 
             if (! n.getParam("x0", x_k)) {
                 ROS_INFO("Error retrieving paramater x.");
@@ -30,6 +30,8 @@ class Odometry{
             sub = n.subscribe("/twist", 1000, &Odometry::callback, this);
 
             odometry = n.advertise<nav_msgs::Odometry>("odometry", 1000);
+
+            n.advertiseService("reset_odometry", &Odometry::resetOdometry, this);
 
         }
 
@@ -82,7 +84,17 @@ class Odometry{
 
     }
 
-    void setEulerKutta(robotics_first::IntegrationConfig &config, uint32_t level) {
+    bool resetOdometry(std_srvs::Empty::Request &req,std_srvs::Empty::Response &res){
+
+        x_k = 0;
+        y_k = 0;
+        theta_k = 0;
+        ROS_INFO("Odometry setted at 0.");
+        return true;
+
+    }
+
+    void setEulerKutta(robotics_first::IntegrationConfig &config, uint32_t level){
 
         ROS_INFO("Reconfigure Request: %d", config.method);
 
@@ -92,8 +104,9 @@ class Odometry{
 
     private:
     ros::NodeHandle n;
-    ros::Subscriber sub;
     ros::Publisher odometry;
+    ros::ServiceServer service;
+    ros::Subscriber sub;
     nav_msgs::Odometry odo_msg; 
     dynamic_reconfigure::Server<robotics_first::IntegrationConfig> server;
     dynamic_reconfigure::Server<robotics_first::IntegrationConfig>::CallbackType f;
@@ -109,6 +122,7 @@ class Odometry{
 
 
 int main(int argc, char** argv) {
+
     ros::init(argc, argv, "odometry");
     
     Odometry odo;
