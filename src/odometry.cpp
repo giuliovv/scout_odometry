@@ -37,9 +37,6 @@ class Odometry{
             odometry = n.advertise<nav_msgs::Odometry>("odometry", 1000);
             custom_odometry = n.advertise<robotics_first::CustomOdometry>("custom_odometry", 1000);
 
-            reset_odometry = n.advertiseService("reset_odometry", &Odometry::resetOdometry, this);
-            reset_odometry_to_pose = n.advertiseService("reset_to_pose", &Odometry::resetToPose, this);
-
         }
 
     
@@ -88,7 +85,7 @@ class Odometry{
 
         custom_odom_msg.odom = odo_msg;
         custom_odom_msg.method = method_for_custom_odom;
-        
+
         custom_odometry.publish(custom_odom_msg);
 
         theta_k = theta_k1;
@@ -134,7 +131,6 @@ class Odometry{
     ros::Publisher odometry;
     ros::Publisher custom_odometry;
     ros::Subscriber sub;
-    ros::ServiceServer reset_odometry;
     ros::ServiceServer reset_odometry_to_pose;
     std_msgs::String method_for_custom_odom;
     nav_msgs::Odometry odo_msg;
