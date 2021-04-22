@@ -5,6 +5,7 @@
 #include <math.h>
 #include <dynamic_reconfigure/server.h>
 #include <robotics_first/IntegrationConfig.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #define T_s 0.1
 
@@ -68,10 +69,14 @@ class Odometry{
         odo_msg.child_frame_id = "world";
         odo_msg.header.frame_id = "robot_frame";
         odo_msg.header.stamp = ros::Time::now();
-        odo_msg.pose.pose.orientation.z = theta_k1;
         odo_msg.pose.pose.position.x = x_k1;
         odo_msg.pose.pose.position.y = y_k1;
-        
+
+        q.setRPY(0,0,theta_k1);
+        odo_msg.pose.pose.orientation.x = q.x();
+        odo_msg.pose.pose.orientation.y = q.y();
+        odo_msg.pose.pose.orientation.z = q.z();
+        odo_msg.pose.pose.orientation.w = q.w();
 
         odometry.publish(odo_msg);
 
@@ -95,6 +100,7 @@ class Odometry{
     ros::Subscriber sub;
     ros::Publisher odometry;
     nav_msgs::Odometry odo_msg; 
+    tf2::Quaternion q;
     dynamic_reconfigure::Server<robotics_first::IntegrationConfig> server;
     dynamic_reconfigure::Server<robotics_first::IntegrationConfig>::CallbackType f;
     int euler_kutta = 0;
