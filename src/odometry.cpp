@@ -1,14 +1,17 @@
-#include "ros/ros.h"
-#include <geometry_msgs/TwistStamped.h>
-#include <std_msgs/Float64.h>
-#include <std_msgs/Bool.h>
-#include <nav_msgs/Odometry.h>
 #include <math.h>
-#include <dynamic_reconfigure/server.h>
-#include <robotics_first/IntegrationConfig.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
+#include "ros/ros.h"
+#include "dynamic_reconfigure/server.h"
+#include "geometry_msgs/TwistStamped.h"
+#include "nav_msgs/Odometry.h"
+#include "std_msgs/Bool.h"
+#include "std_msgs/Float64.h"
 #include "std_srvs/Empty.h"
-#include <robotics_first/ResetToPose.h>
+#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+
+#include "robotics_first/CustomOdometry.h"
+#include "robotics_first/IntegrationConfig.h"
+#include "robotics_first/ResetToPose.h"
 
 class Odometry{
     public:
@@ -32,6 +35,7 @@ class Odometry{
             sub = n.subscribe("/twist", 1000, &Odometry::callback, this);
 
             odometry = n.advertise<nav_msgs::Odometry>("odometry", 1000);
+            custom_odometry = n.advertise<robotics_first::CustomOdometry>("custom_odometry", 1000);
 
             reset_odometry = n.advertiseService("reset_odometry", &Odometry::resetOdometry, this);
             reset_odometry_to_pose = n.advertiseService("reset_to_pose", &Odometry::resetToPose, this);
@@ -82,6 +86,11 @@ class Odometry{
 
         odometry.publish(odo_msg);
 
+        custom_odom_msg.odom = odo_msg;
+        custom_odom_msg.method = method_for_custom_odom;
+        
+        custom_odometry.publish(custom_odom_msg);
+
         theta_k = theta_k1;
         x_k = x_k1;
         y_k = y_k1;
@@ -113,19 +122,23 @@ class Odometry{
 
     void setEulerKutta(robotics_first::IntegrationConfig &config, uint32_t level){
 
-        ROS_INFO("Reconfigure Request: %d", config.method);
-
         euler_kutta = config.method;
+        method_for_custom_odom.data = euler_kutta == 0 ? "euler" : "rk";
+
+        ROS_INFO("Reconfigure Request: %d, %s", config.method, method_for_custom_odom.data.c_str());
 
     }
 
     private:
     ros::NodeHandle n;
     ros::Publisher odometry;
+    ros::Publisher custom_odometry;
     ros::Subscriber sub;
     ros::ServiceServer reset_odometry;
     ros::ServiceServer reset_odometry_to_pose;
-    nav_msgs::Odometry odo_msg; 
+    std_msgs::String method_for_custom_odom;
+    nav_msgs::Odometry odo_msg;
+    robotics_first::CustomOdometry custom_odom_msg;
     tf2::Quaternion q;
     dynamic_reconfigure::Server<robotics_first::IntegrationConfig> server;
     dynamic_reconfigure::Server<robotics_first::IntegrationConfig>::CallbackType f;

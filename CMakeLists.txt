@@ -58,8 +58,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   MotorSpeed.msg
-#   Message1.msg
-#   Message2.msg
+  CustomOdometry.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -243,6 +242,3 @@ target_link_libraries(odometry ${catkin_LIBRARIES})
 
 add_executable(agile_tf src/agile_tf.cpp)
 target_link_libraries(agile_tf ${catkin_LIBRARIES})
-
-add_executable(local_tf src/local_tf.cpp)
-target_link_libraries(local_tf ${catkin_LIBRARIES})
