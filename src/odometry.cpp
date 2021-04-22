@@ -1,17 +1,23 @@
 #include "ros/ros.h"
 #include <geometry_msgs/TwistStamped.h>
 #include <std_msgs/Float64.h>
+#include <std_msgs/Bool.h>
 #include <nav_msgs/Odometry.h>
 #include <math.h>
 #include <dynamic_reconfigure/server.h>
 #include <robotics_first/IntegrationConfig.h>
+<<<<<<< HEAD
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #define T_s 0.1
+=======
+#include "std_srvs/Empty.h"
+#include <robotics_first/ResetToPose.h>
+>>>>>>> 094292f6748e3fe7afa2dd01d881885cd83c3146
 
 class Odometry{
     public:
-        Odometry() {
+        Odometry(){
 
             if (! n.getParam("x0", x_k)) {
                 ROS_INFO("Error retrieving paramater x.");
@@ -31,6 +37,9 @@ class Odometry{
             sub = n.subscribe("/twist", 1000, &Odometry::callback, this);
 
             odometry = n.advertise<nav_msgs::Odometry>("odometry", 1000);
+
+            n.advertiseService("reset_odometry", &Odometry::resetOdometry, this);
+            n.advertiseService("reset_to_pose", &Odometry::resetToPose, this);
 
         }
 
@@ -87,7 +96,29 @@ class Odometry{
 
     }
 
-    void setEulerKutta(robotics_first::IntegrationConfig &config, uint32_t level) {
+    bool resetOdometry(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res){
+
+        x_k = 0;
+        y_k = 0;
+        theta_k = 0;
+
+        ROS_INFO("Odometry setted at 0.");
+        return true;
+
+    }
+
+    bool resetToPose(robotics_first::ResetToPose::Request &req, std_srvs::Empty::Response &res){
+
+        x_k = req.x;
+        y_k = req.y;
+        theta_k = req.theta;
+        
+        ROS_INFO("Odometry setted at x=%f y=%f theta=%f.", req.x, req.y, req.theta);
+        return true;
+
+    }
+
+    void setEulerKutta(robotics_first::IntegrationConfig &config, uint32_t level){
 
         ROS_INFO("Reconfigure Request: %d", config.method);
 
@@ -97,8 +128,9 @@ class Odometry{
 
     private:
     ros::NodeHandle n;
-    ros::Subscriber sub;
     ros::Publisher odometry;
+    ros::ServiceServer service;
+    ros::Subscriber sub;
     nav_msgs::Odometry odo_msg; 
     tf2::Quaternion q;
     dynamic_reconfigure::Server<robotics_first::IntegrationConfig> server;
@@ -115,6 +147,7 @@ class Odometry{
 
 
 int main(int argc, char** argv) {
+
     ros::init(argc, argv, "odometry");
     
     Odometry odo;
