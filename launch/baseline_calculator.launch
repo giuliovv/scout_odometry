@@ -1,0 +1,8 @@
+<launch>
+
+    <node pkg="robotics_first" name="baseline_calculator" type="baseline_calculator" output="screen"/>
+
+    <arg name="bag_file_name" value="bag1"/>
+    <node pkg="rosbag" type="play" name="player" args="--clock $(find robotics_first)/bags/$(arg bag_file_name).bag"/>
+
+</launch>
