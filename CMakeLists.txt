@@ -235,7 +235,7 @@ add_executable(baseline_calculator src/baseline_calculator.cpp)
 add_dependencies(baseline_calculator robotics_first_generate_messages_cpp)
 target_link_libraries(baseline_calculator ${catkin_LIBRARIES})
 
-add_executable(odometry src/odometry.cpp)
+add_executable(odometry src/odometry_functional.cpp)
 add_dependencies(odometry robotics_first_generate_messages_cpp)
 add_dependencies(odometry ${PROJECT_NAME}_gencfg)
 target_link_libraries(odometry ${catkin_LIBRARIES})
