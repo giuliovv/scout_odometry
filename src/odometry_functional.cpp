@@ -13,7 +13,6 @@
 #include "robotics_first/IntegrationConfig.h"
 #include "robotics_first/ResetToPose.h"
 
-
 struct position_t {
   double x_k;
   double y_k;
@@ -22,6 +21,7 @@ struct position_t {
   double y_k1;
   double theta_k1;
   double prv_time;
+  int test;
 };
 
 struct rosObjects_t {
@@ -43,7 +43,8 @@ struct rosObjects_t {
 /////
 
 
-void read_parameters(position_t &position, rosObjects_t &rosObjects){
+void read_initial_parameters(position_t &position, rosObjects_t &rosObjects){
+    // Read initial values from node parameters
 
     if (! rosObjects.node.getParam("x0", position.x_k)) {
         ROS_INFO("Error retrieving paramater x.");
@@ -66,18 +67,22 @@ void read_parameters(position_t &position, rosObjects_t &rosObjects){
 
 void set_euler_or_kutta(robotics_first::IntegrationConfig &config,
                     uint32_t level,
-                    rosObjects_t &rosObject){
+                    rosObjects_t& rosObjects){
 
-    rosObject.euler_kutta = config.method;
-    rosObject.method_for_custom_odom.data = rosObject.euler_kutta == 0 ? "euler" : "rk";
+    rosObjects.euler_kutta = config.method;
+    rosObjects.method_for_custom_odom.data = config.method == 0 ? "euler" : "rk";
 
-    ROS_INFO("Reconfigure Request: %d, %s", config.method, rosObject.method_for_custom_odom.data.c_str());
+    ROS_INFO("Reconfigure Request: %d, %s", config.method, rosObjects.method_for_custom_odom.data.c_str());
 
 }
 
-void start_dynamic_server(rosObjects_t &rosObject, dynamic_reconfigure::Server<robotics_first::IntegrationConfig> &dynamic_server){
+void start_dynamic_server(rosObjects_t &rosObjects,
+                        dynamic_reconfigure::Server<robotics_first::IntegrationConfig> &dynamic_server){
+    // Dynamic server to choose between integration methods.
 
-    dynamic_reconfigure::Server<robotics_first::IntegrationConfig>::CallbackType callback_dynamic_server = boost::bind(&set_euler_or_kutta, _1, _2, rosObject);
+    dynamic_reconfigure::Server<robotics_first::IntegrationConfig>::CallbackType callback_dynamic_server;
+
+    callback_dynamic_server = boost::bind(&set_euler_or_kutta, _1, _2, boost::ref(rosObjects));
     dynamic_server.setCallback(callback_dynamic_server);
 
 }
@@ -109,7 +114,11 @@ void euler(const geometry_msgs::TwistStampedConstPtr &msg,
 
 }
 
-void kutta(const geometry_msgs::TwistStampedConstPtr& msg, double V_x, double omega, double time, position_t &position){
+void kutta(const geometry_msgs::TwistStampedConstPtr& msg,
+        double V_x,
+        double omega,
+        double time,
+        position_t &position){
 
     position.theta_k1 = position.theta_k + omega*time;
     position.x_k1 = position.x_k + V_x*time*cos(position.theta_k + omega*time/2);
@@ -158,9 +167,10 @@ void read_twist_calculate_odometry(const geometry_msgs::TwistStampedConstPtr &ms
 
 }
 
-void start_subscriber(position_t &position, rosObjects_t &rosObjects){
+void start_subscriber(position_t &position,
+                    rosObjects_t &rosObjects){
 
-    auto callback_subscriber = boost::bind(&read_twist_calculate_odometry, _1, position, rosObjects);
+    auto callback_subscriber = boost::bind(&read_twist_calculate_odometry, _1, boost::ref(position), boost::ref(rosObjects));
     rosObjects.twist_subscriber = rosObjects.node.subscribe<geometry_msgs::TwistStamped>("/twist", 1000, callback_subscriber);
 
 }
@@ -195,12 +205,17 @@ bool reset_odometry_to_pose(robotics_first::ResetToPose::Request &req,
 
 }
 
-void start_services(position_t &position, rosObjects_t &rosObjects){
+void start_services(position_t &position,
+                rosObjects_t &rosObjects){
 
-    auto callback_reset_odometry = boost::bind(&reset_odometry, _1, _2, position);
-    rosObjects.reset_odom = rosObjects.node.advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>("reset_odometry", callback_reset_odometry);
-    auto callback_reset_to_pose = boost::bind(&reset_odometry_to_pose, _1, _2, position);
-    rosObjects.reset_odom_to_pose = rosObjects.node.advertiseService<robotics_first::ResetToPose::Request, robotics_first::ResetToPose::Response>("reset_odometry_to_pose", callback_reset_to_pose);
+    auto callback_reset_odometry = boost::bind(&reset_odometry, _1, _2, boost::ref(position));
+    rosObjects.reset_odom = rosObjects.node.advertiseService<std_srvs::Empty::Request,
+                                                            std_srvs::Empty::Response>
+                                                            ("reset_odometry", callback_reset_odometry);
+    auto callback_reset_to_pose = boost::bind(&reset_odometry_to_pose, _1, _2, boost::ref(position));
+    rosObjects.reset_odom_to_pose = rosObjects.node.advertiseService<robotics_first::ResetToPose::Request,
+                                                                    robotics_first::ResetToPose::Response>
+                                                                    ("reset_odometry_to_pose", callback_reset_to_pose);
     
 }
 
@@ -217,7 +232,7 @@ int main(int argc, char** argv){
     // Must be here due to weird compiler error.
     dynamic_reconfigure::Server<robotics_first::IntegrationConfig> dynamic_server;
     
-    read_parameters(position, rosObjects);
+    read_initial_parameters(position, rosObjects);
 
     start_dynamic_server(rosObjects, dynamic_server);
 
