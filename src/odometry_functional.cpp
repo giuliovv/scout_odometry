@@ -21,7 +21,6 @@ struct position_t {
   double y_k1;
   double theta_k1;
   double prv_time;
-  int test;
 };
 
 struct rosObjects_t {
@@ -32,6 +31,7 @@ struct rosObjects_t {
     ros::ServiceServer reset_odom;
     ros::ServiceServer reset_odom_to_pose;
 
+    dynamic_reconfigure::Server<robotics_first::IntegrationConfig> dynamic_server;
     std_msgs::String method_for_custom_odom;
     nav_msgs::Odometry odo_msg;
     robotics_first::CustomOdometry custom_odom_msg;
@@ -76,14 +76,13 @@ void set_euler_or_kutta(robotics_first::IntegrationConfig &config,
 
 }
 
-void start_dynamic_server(rosObjects_t &rosObjects,
-                        dynamic_reconfigure::Server<robotics_first::IntegrationConfig> &dynamic_server){
+void start_dynamic_server(rosObjects_t &rosObjects){
     // Dynamic server to choose between integration methods.
 
     dynamic_reconfigure::Server<robotics_first::IntegrationConfig>::CallbackType callback_dynamic_server;
 
     callback_dynamic_server = boost::bind(&set_euler_or_kutta, _1, _2, boost::ref(rosObjects));
-    dynamic_server.setCallback(callback_dynamic_server);
+    rosObjects.dynamic_server.setCallback(callback_dynamic_server);
 
 }
 
@@ -229,12 +228,10 @@ int main(int argc, char** argv){
 
     position_t position;
     rosObjects_t rosObjects;
-    // Must be here due to weird compiler error.
-    dynamic_reconfigure::Server<robotics_first::IntegrationConfig> dynamic_server;
     
     read_initial_parameters(position, rosObjects);
 
-    start_dynamic_server(rosObjects, dynamic_server);
+    start_dynamic_server(rosObjects);
 
     start_publishers(rosObjects);
 
