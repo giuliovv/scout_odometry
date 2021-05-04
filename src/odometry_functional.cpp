@@ -14,13 +14,13 @@
 #include "robotics_first/ResetToPose.h"
 
 struct position_t {
-  double x_k;
-  double y_k;
-  double theta_k;
-  double x_k1;
-  double y_k1;
-  double theta_k1;
-  double prv_time;
+    double x_k;
+    double y_k;
+    double theta_k;
+    double x_k1;
+    double y_k1;
+    double theta_k1;
+    double prv_time;
 };
 
 struct rosObjects_t {
@@ -129,40 +129,40 @@ void read_twist_calculate_odometry(const geometry_msgs::TwistStampedConstPtr &ms
             position_t &position,
             rosObjects_t &rosObject){
 
-        double V_x = msg -> twist.linear.x;
-        double omega = msg -> twist.angular.z;
-        double time = msg -> header.stamp.toSec();
-        double delta_time = time - position.prv_time;
+    double V_x = msg -> twist.linear.x;
+    double omega = msg -> twist.angular.z;
+    double time = msg -> header.stamp.toSec();
+    double delta_time = time - position.prv_time;
 
-        if (rosObject.euler_kutta == 0){
-            euler(msg, V_x, omega, delta_time, position);
-        } else {
-            kutta(msg, V_x, omega, delta_time, position);
-        };
+    if (rosObject.euler_kutta == 0){
+        euler(msg, V_x, omega, delta_time, position);
+    } else {
+        kutta(msg, V_x, omega, delta_time, position);
+    };
 
-        rosObject.odo_msg.child_frame_id = "world";
-        rosObject.odo_msg.header.frame_id = "robot_frame";
-        rosObject.odo_msg.header.stamp = ros::Time::now();
-        rosObject.odo_msg.pose.pose.position.x = position.x_k1;
-        rosObject.odo_msg.pose.pose.position.y = position.y_k1;
+    rosObject.odo_msg.child_frame_id = "world";
+    rosObject.odo_msg.header.frame_id = "robot_frame";
+    rosObject.odo_msg.header.stamp = ros::Time::now();
+    rosObject.odo_msg.pose.pose.position.x = position.x_k1;
+    rosObject.odo_msg.pose.pose.position.y = position.y_k1;
 
-        rosObject.q.setRPY(0,0,position.theta_k1);
-        rosObject.odo_msg.pose.pose.orientation.x = rosObject.q.x();
-        rosObject.odo_msg.pose.pose.orientation.y = rosObject.q.y();
-        rosObject.odo_msg.pose.pose.orientation.z = rosObject.q.z();
-        rosObject.odo_msg.pose.pose.orientation.w = rosObject.q.w();
+    rosObject.q.setRPY(0,0,position.theta_k1);
+    rosObject.odo_msg.pose.pose.orientation.x = rosObject.q.x();
+    rosObject.odo_msg.pose.pose.orientation.y = rosObject.q.y();
+    rosObject.odo_msg.pose.pose.orientation.z = rosObject.q.z();
+    rosObject.odo_msg.pose.pose.orientation.w = rosObject.q.w();
 
-        rosObject.odometry.publish(rosObject.odo_msg);
+    rosObject.odometry.publish(rosObject.odo_msg);
 
-        rosObject.custom_odom_msg.odom = rosObject.odo_msg;
-        rosObject.custom_odom_msg.method = rosObject.method_for_custom_odom;
+    rosObject.custom_odom_msg.odom = rosObject.odo_msg;
+    rosObject.custom_odom_msg.method = rosObject.method_for_custom_odom;
 
-        rosObject.custom_odometry.publish(rosObject.custom_odom_msg);
+    rosObject.custom_odometry.publish(rosObject.custom_odom_msg);
 
-        position.theta_k = position.theta_k1;
-        position.x_k = position.x_k1;
-        position.y_k = position.y_k1;
-        position.prv_time = time;
+    position.theta_k = position.theta_k1;
+    position.x_k = position.x_k1;
+    position.y_k = position.y_k1;
+    position.prv_time = time;
 
 }
 
