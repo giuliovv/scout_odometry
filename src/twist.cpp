@@ -1,14 +1,15 @@
-#include "ros/ros.h"
 #include <math.h>
-#include <message_filters/subscriber.h>
-#include <message_filters/time_synchronizer.h>
-#include <geometry_msgs/TwistStamped.h>
+
+#include "ros/ros.h"
+#include "message_filters/subscriber.h"
+#include "message_filters/time_synchronizer.h"
+#include "geometry_msgs/TwistStamped.h"
 
 #include "robotics_first/MotorSpeed.h"
 
 #define R 0.1575
 #define GEAR_RATIO 38
-#define APPA 1.04
+#define APPARENT_BASELINE 1.04
 
 void callback(const robotics_first::MotorSpeedConstPtr& left, 
               const robotics_first::MotorSpeedConstPtr& right,
@@ -16,7 +17,7 @@ void callback(const robotics_first::MotorSpeedConstPtr& left,
 
     float v_left = (left->rpm) * 2 * M_PI * R / (60 * GEAR_RATIO);
     float v_right = (right->rpm) * 2 * M_PI * R / (60 * GEAR_RATIO);
-    float w = (v_right + v_left)/APPA;
+    float w = (v_right + v_left)/APPARENT_BASELINE;
     float v_x = (- v_left + v_right)/2;
 
     geometry_msgs::TwistStamped msg;
