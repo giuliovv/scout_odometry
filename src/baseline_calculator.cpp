@@ -12,8 +12,9 @@
 #define R 0.1575
 #define ALPHA 0.1
 
-void callback(const robotics_first::MotorSpeedConstPtr& rear_left, 
-              const robotics_first::MotorSpeedConstPtr& rear_right,
+void callback(
+            // const robotics_first::MotorSpeedConstPtr& rear_left, 
+            //   const robotics_first::MotorSpeedConstPtr& rear_right,
               const robotics_first::MotorSpeedConstPtr& front_left, 
               const robotics_first::MotorSpeedConstPtr& front_right,
               const nav_msgs::OdometryConstPtr& odo,
@@ -22,8 +23,8 @@ void callback(const robotics_first::MotorSpeedConstPtr& rear_left,
               float& ema_apparent_baselines,
               int& apparent_baseline_iteration_number) {
 
-    float v_left_no_gear_ratio = (rear_left->rpm + front_left->rpm)/2 * 2 * M_PI * R / 60;
-    float v_right_no_gear_ratio = (rear_right->rpm + front_right->rpm)/2 * 2 * M_PI * R / 60;
+    float v_left_no_gear_ratio = (front_left->rpm) * 2 * M_PI * R / 60;
+    float v_right_no_gear_ratio = (front_right->rpm) * 2 * M_PI * R / 60;
 
     float v_x_no_gear_ratio = (- v_left_no_gear_ratio + v_right_no_gear_ratio)/2;
 
@@ -67,18 +68,18 @@ int main(int argc, char** argv) {
 
     ros::NodeHandle n;
 
-    message_filters::Subscriber<robotics_first::MotorSpeed> rl(n, "motor_speed_rl", 1);
-    message_filters::Subscriber<robotics_first::MotorSpeed> rr(n, "motor_speed_rr", 1);
+    // message_filters::Subscriber<robotics_first::MotorSpeed> rl(n, "motor_speed_rl", 1);
+    // message_filters::Subscriber<robotics_first::MotorSpeed> rr(n, "motor_speed_rr", 1);
     message_filters::Subscriber<robotics_first::MotorSpeed> fl(n, "motor_speed_fl", 1);
     message_filters::Subscriber<robotics_first::MotorSpeed> fr(n, "motor_speed_fr", 1);
     message_filters::Subscriber<nav_msgs::Odometry> odom(n, "scout_odom", 1);
     message_filters::TimeSynchronizer<robotics_first::MotorSpeed, 
                                         robotics_first::MotorSpeed,
-                                        robotics_first::MotorSpeed,
-                                        robotics_first::MotorSpeed,
+                                        // robotics_first::MotorSpeed,
+                                        // robotics_first::MotorSpeed,
                                         nav_msgs::Odometry
-                                        > sync(rl, rr, fl, fr, odom, 10);
-    sync.registerCallback(boost::bind(&callback, _1, _2, _3, _4, _5,
+                                        > sync(fl, fr, odom, 10);
+    sync.registerCallback(boost::bind(&callback, _1, _2, _3,
                                          sum_of_gear_ratios, iteration_number,
                                          ema_apparent_baselines, apparent_baseline_iteration_number));
 

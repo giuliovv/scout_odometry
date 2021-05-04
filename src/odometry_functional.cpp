@@ -8,7 +8,6 @@
 #include "std_msgs/Float64.h"
 #include "std_srvs/Empty.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
-#include "tf2_ros/transform_broadcaster.h"
 
 #include "robotics_first/CustomOdometry.h"
 #include "robotics_first/IntegrationConfig.h"
@@ -37,7 +36,6 @@ struct rosObjects_t {
     nav_msgs::Odometry odo_msg;
     robotics_first::CustomOdometry custom_odom_msg;
     tf2::Quaternion q;
-    tf2_ros::TransformBroadcaster br;
     int euler_kutta = 0;
 };
 

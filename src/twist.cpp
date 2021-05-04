@@ -8,8 +8,8 @@
 #include "robotics_first/MotorSpeed.h"
 
 #define R 0.1575
-#define GEAR_RATIO 38
-#define APPARENT_BASELINE 1.04
+#define GEAR_RATIO 38.65
+#define APPARENT_BASELINE 1.02
 
 void callback(const robotics_first::MotorSpeedConstPtr& left, 
               const robotics_first::MotorSpeedConstPtr& right,

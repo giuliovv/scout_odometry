@@ -243,5 +243,5 @@ target_link_libraries(odometry ${catkin_LIBRARIES})
 add_executable(agile_tf src/agile_tf.cpp)
 target_link_libraries(agile_tf ${catkin_LIBRARIES})
 
-add_executable(local_tf src/local_tf.cpp)
-target_link_libraries(local_tf ${catkin_LIBRARIES})
+add_executable(tf_publisher src/tf_publisher.cpp)
+target_link_libraries(tf_publisher ${catkin_LIBRARIES})
