@@ -140,11 +140,12 @@ void read_twist_calculate_odometry(const geometry_msgs::TwistStampedConstPtr &ms
         kutta(msg, V_x, omega, delta_time, position);
     };
 
-    rosObject.odo_msg.child_frame_id = "world";
-    rosObject.odo_msg.header.frame_id = "robot_frame";
+    rosObject.odo_msg.child_frame_id = "robot";
+    rosObject.odo_msg.header.frame_id = "world";
     rosObject.odo_msg.header.stamp = ros::Time::now();
     rosObject.odo_msg.pose.pose.position.x = position.x_k1;
     rosObject.odo_msg.pose.pose.position.y = position.y_k1;
+    rosObject.odo_msg.pose.pose.position.z = 0.33;
 
     rosObject.q.setRPY(0,0,position.theta_k1);
     rosObject.odo_msg.pose.pose.orientation.x = rosObject.q.x();

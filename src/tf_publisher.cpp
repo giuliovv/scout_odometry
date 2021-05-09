@@ -15,10 +15,11 @@ public:
   void callback(const nav_msgs::OdometryConstPtr& msg){
     transformStamped.header.stamp = ros::Time::now();
     transformStamped.header.frame_id = "world";
-    transformStamped.child_frame_id = "robot_frame";
-    transformStamped.transform.translation.x = msg->pose.pose.orientation.x;
-    transformStamped.transform.translation.y = msg->pose.pose.orientation.y;
-    transformStamped.transform.translation.z = 0.0;
+    transformStamped.child_frame_id = "robot";
+    transformStamped.transform.translation.x = msg->pose.pose.position.x;
+    transformStamped.transform.translation.y = msg->pose.pose.position.y;
+    transformStamped.transform.translation.z = msg->pose.pose.position.z;
+
     transformStamped.transform.rotation.x = msg->pose.pose.orientation.x;
     transformStamped.transform.rotation.y = msg->pose.pose.orientation.y;
     transformStamped.transform.rotation.z = msg->pose.pose.orientation.z;
