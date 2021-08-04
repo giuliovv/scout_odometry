@@ -2,9 +2,10 @@
   :robot: Agilex Scout odometry :robot:
 </h1>
 
-Group project for Polimi Perception, localization and mapping for mobile robots course 20/21.
+<p align="center">Group project for Polimi Perception, localization and mapping for mobile robots course 20/21.</p>
 
 <h3>Files:</h3>
+
 1. <b>Bags folder</b> → contains the bags provided. 
 2. <b>Cfg folder</b> → parameter.cfg that contains the configuration of the dynamic reconfigure server. 
 3. <b>Launch folder</b> → robotics_first.launch is the launch file that starts everything. 
