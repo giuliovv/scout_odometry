@@ -3,6 +3,7 @@
 </h1>
 
 <p align="center">Group project for Polimi Perception, localization and mapping for mobile robots course 20/21.</p>
+<p>The second part of the project, SLAM based on LIDAR and odometry sensor fusion is here: <a href="https://github.com/giuliovv/robotics_second">robotics_second</a></p>
 
 <h3>Files:</h3>
 
